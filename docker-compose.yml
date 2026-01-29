@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  backend:
+    container_name: safe-route-be
+    image: ahamednazeer/safe-route:0.1-be
+    ports:
+      - "8000:8000"
+    volumes:
+      - backend_data:/app
+    environment:
+      - SECRET_KEY=dev-secret-key-change-in-prod
+      - DEBUG=true
+      - DATABASE_URL=sqlite:///./safe_route.db
+      - CORS_ORIGINS=["http://localhost:3000"]
+    networks:
+      - safe-route-net
+
+  frontend:
+    container_name: safe-route-fe
+    image: ahamednazeer/safe-route:0.1-fe
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    networks:
+      - safe-route-net
+    depends_on:
+      - backend
+
+networks:
+  safe-route-net:
+    driver: bridge
+
+volumes:
+  backend_data:
